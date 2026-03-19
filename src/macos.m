@@ -31,7 +31,8 @@ void platform_open_window(int width, int height, const char *title) {
     AppDelegate *delegate = [[AppDelegate alloc] init];
     [NSApp setDelegate:delegate];
 
-    NSRect frame = NSMakeRect(0, 0, width, height);
+    CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
+    NSRect frame = NSMakeRect(0, 0, width / scale, height / scale);
     NSUInteger style = NSWindowStyleMaskTitled
                      | NSWindowStyleMaskClosable
                      | NSWindowStyleMaskMiniaturizable;
