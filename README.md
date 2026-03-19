@@ -26,6 +26,7 @@ while (platform_running()) {
 
 - **macOS** (`src/macos.m`) — Cocoa/Objective-C. Drains events with `nextEventMatchingMask:untilDate:distantPast`. Window close sets `g_running = false` via `NSWindowDelegate`.
 - **Linux** (`src/linux.c`) — Xlib (X11). Drains events with `XPending`/`XNextEvent`. Window close is intercepted via the `WM_DELETE_WINDOW` atom to set `g_running = false`.
+- **Windows** (`src/windows.c`) — Win32. Drains events with `PeekMessageA`/`DispatchMessageA`. Window close is handled by `DefWindowProcA` which calls `DestroyWindow` → triggers `WM_DESTROY` → sets `g_running = false`.
 
 ## Build
 
@@ -42,9 +43,15 @@ sudo apt install build-essential libx11-dev   # Debian/Ubuntu
 sudo dnf install gcc make libX11-devel        # Fedora/RHEL
 ```
 
+Windows requires Visual Studio (2019 16.8+ for C17 designated initializers) and GNU make (available via winget, Chocolatey, or Git for Windows). Build from a **Developer Command Prompt for VS** so `cl.exe` is on PATH:
+
+```sh
+winget install GnuWin32.Make
+```
+
 | Command | Effect |
 |---|---|
-| `make` | Build to `build/game` |
+| `make` | Build to `build/game` (or `build\game.exe` on Windows) |
 | `make clean` | Remove `build/` |
 
-Run: `./build/game`
+Run: `./build/game` (macOS/Linux) or `build\game.exe` (Windows)
