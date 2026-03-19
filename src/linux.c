@@ -10,12 +10,17 @@ void platform_open_window(int width, int height, const char *title) {
     g_display = XOpenDisplay(NULL);
     int screen = DefaultScreen(g_display);
 
+    Color c = PLATFORM_CLEAR_COLOR;
+    unsigned long bg = ((unsigned long)c.r << 16)
+                     | ((unsigned long)c.g << 8)
+                     |  (unsigned long)c.b;
+
     g_window = XCreateSimpleWindow(
         g_display,
         RootWindow(g_display, screen),
         0, 0, width, height, 0,
         BlackPixel(g_display, screen),
-        BlackPixel(g_display, screen)
+        bg
     );
 
     XStoreName(g_display, g_window, title);

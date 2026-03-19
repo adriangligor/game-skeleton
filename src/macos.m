@@ -6,7 +6,8 @@
 
 @implementation GameView
 - (void)drawRect:(NSRect)dirtyRect {
-    [[NSColor colorWithRed:0.2 green:0.3 blue:0.4 alpha:1.0] set];
+    Color c = PLATFORM_CLEAR_COLOR;
+    [[NSColor colorWithRed:c.r/255.0 green:c.g/255.0 blue:c.b/255.0 alpha:1.0] set];
     NSRectFill(dirtyRect);
 }
 @end
