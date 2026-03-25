@@ -10,6 +10,7 @@ ifdef OS
     PLATFORM_CFLAGS = $(CFLAGS)
     LDFLAGS         = user32.lib gdi32.lib /link /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
     MAIN_OBJ        = $(BUILD_DIR)/main.obj
+    GAME_OBJ        = $(BUILD_DIR)/game.obj
     CC_COMPILE      = /c
     CC_OBJ_OUT      = /Fo
     CC_EXE_OUT      = /Fe
@@ -23,6 +24,7 @@ else
     SRC_DIR   = src
     TARGET    = $(BUILD_DIR)/game
     MAIN_OBJ  = $(BUILD_DIR)/main.o
+    GAME_OBJ  = $(BUILD_DIR)/game.o
     CC_COMPILE = -c
     CC_OBJ_OUT = -o
     CC_EXE_OUT = -o
@@ -33,7 +35,7 @@ else
         PLATFORM_SRC    = $(SRC_DIR)/macos.m
         PLATFORM_OBJ    = $(BUILD_DIR)/macos.o
         PLATFORM_CFLAGS = -Wall -Wextra
-        LDFLAGS         = -framework Cocoa
+        LDFLAGS         = -framework Cocoa -framework Metal -framework QuartzCore
     else
         PLATFORM_SRC    = $(SRC_DIR)/linux.c
         PLATFORM_OBJ    = $(BUILD_DIR)/linux.o
@@ -42,7 +44,7 @@ else
     endif
 endif
 
-OBJS = $(MAIN_OBJ) $(PLATFORM_OBJ)
+OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(PLATFORM_OBJ)
 
 .PHONY: all clean
 
@@ -52,6 +54,9 @@ $(BUILD_DIR):
 	$(MKDIR)
 
 $(MAIN_OBJ): $(SRC_DIR)/main.c
+	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
+
+$(GAME_OBJ): $(SRC_DIR)/game.c
 	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
 
 $(PLATFORM_OBJ): $(PLATFORM_SRC)

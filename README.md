@@ -4,13 +4,15 @@ Minimal C game skeleton with a platform abstraction layer.
 
 ## Platform abstraction
 
-`src/platform.h` declares three functions each backend must implement:
+`src/platform.h` declares the functions each backend must implement:
 
 | Function | Purpose |
 |---|---|
 | `platform_open_window(w, h, title)` | Create and show the OS window |
 | `platform_running()` | Returns `false` once the window is closed |
 | `platform_pump_events()` | Drains the OS event queue and returns immediately |
+| `platform_get_surface()` | Returns a pointer to the CPU pixel buffer |
+| `platform_draw_surface()` | Uploads the pixel buffer to the GPU and presents |
 
 The game loop in `src/main.c` is platform-independent:
 
@@ -18,15 +20,34 @@ The game loop in `src/main.c` is platform-independent:
 platform_open_window(640, 480, "Game");
 while (platform_running()) {
     platform_pump_events();
-    // game_update(); game_render();
+    game_update();
+    game_render();
 }
 ```
+
+`game_render` (in `src/game.c`) calls `platform_get_surface` to obtain an RGBA8 pixel buffer, writes into it, then calls `platform_draw_surface`.
 
 ### Backends
 
 - **macOS** (`src/macos.m`) — Cocoa/Objective-C. Drains events with `nextEventMatchingMask:untilDate:distantPast`. Window close sets `g_running = false` via `NSWindowDelegate`.
 - **Linux** (`src/linux.c`) — Xlib (X11). Drains events with `XPending`/`XNextEvent`. Window close is intercepted via the `WM_DELETE_WINDOW` atom to set `g_running = false`.
 - **Windows** (`src/windows.c`) — Win32. Drains events with `PeekMessageA`/`DispatchMessageA`. Window close is handled by `DefWindowProcA` which calls `DestroyWindow` → triggers `WM_DESTROY` → sets `g_running = false`.
+
+## Rendering pipeline
+
+Each frame follows three steps:
+
+1. **CPU compositing** — `game_render` writes RGBA8 pixels into the surface returned by `platform_get_surface`. This is ordinary memory; no GPU knowledge required.
+2. **Upload** — `platform_draw_surface` copies the CPU buffer to a GPU texture (the "staging" step).
+3. **Display** — the GPU samples the texture and outputs it to the screen via a minimal full-screen pass.
+
+The surface pixel format is **RGBA8** (one byte per channel, R at the lowest address, stride = `width × 4` bytes) on all platforms, so assets can be written or `memcpy`'d in directly.
+
+### Platform details
+
+- **macOS** — `CAMetalLayer` with `MTLPixelFormatRGBA8Unorm`. Upload via `MTLTexture replaceRegion` (storage mode: `MTLStorageModeShared` on Apple Silicon, `MTLStorageModeManaged` on Intel). Display via a one-triangle render pass; a Metal fragment shader reads the staging texture by integer pixel coordinate (`tex.read(uint2(pos.xy))`). Shaders are compiled from a source string at startup — no `.metal` files or offline compilation step needed.
+- **Linux** (planned) — X11 window + OpenGL context via GLX. Upload via `glTexSubImage2D(GL_RGBA, ...)`. Display via a fullscreen quad GLSL shader. Links only `-lGL`, which is standard on any X11 desktop.
+- **Windows** (planned) — Win32 window + Direct3D 11. Upload via `ID3D11DeviceContext::UpdateSubresource` to a `DXGI_FORMAT_R8G8B8A8_UNORM` texture. Display via a fullscreen pass HLSL shader.
 
 ## Build
 
