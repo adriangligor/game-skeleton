@@ -60,14 +60,15 @@ void platform_open_window(int width, int height, const char *title) {
     };
     RegisterClassExA(&wc);
 
+    DWORD style = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX;
     RECT rect = { 0, 0, width, height };
-    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+    AdjustWindowRect(&rect, style, FALSE);
 
     g_hwnd = CreateWindowExA(
         0,
         "GameWindow",
         title,
-        WS_OVERLAPPEDWINDOW,
+        style,
         CW_USEDEFAULT, CW_USEDEFAULT,
         rect.right - rect.left,
         rect.bottom - rect.top,

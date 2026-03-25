@@ -87,6 +87,13 @@ void platform_open_window(int width, int height, const char *title) {
 
     XStoreName(g_display, g_window, title);
 
+    XSizeHints *hints = XAllocSizeHints();
+    hints->flags      = PMinSize | PMaxSize;
+    hints->min_width  = hints->max_width  = width;
+    hints->min_height = hints->max_height = height;
+    XSetWMNormalHints(g_display, g_window, hints);
+    XFree(hints);
+
     g_wm_delete_window = XInternAtom(g_display, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(g_display, g_window, &g_wm_delete_window, 1);
 
