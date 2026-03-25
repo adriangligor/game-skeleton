@@ -25,7 +25,6 @@ static GLuint     g_texture;
 static GLuint     g_program;
 static GLuint     g_vao;
 static bool       g_running;
-static Surface    g_surface;
 
 // Fullscreen triangle. OpenGL UV origin is bottom-left but our CPU buffer
 // has row 0 at the top, so V is flipped: uv.y = (1 - ndc.y) / 2.
@@ -134,11 +133,6 @@ void platform_open_window(int width, int height, const char *title) {
 
     glViewport(0, 0, width, height);
 
-    // CPU pixel buffer owned by the platform
-    g_surface.pixels = malloc((size_t)(width * height * 4));
-    g_surface.width  = width;
-    g_surface.height = height;
-
     g_running = true;
 }
 
@@ -157,17 +151,13 @@ void platform_pump_events(void) {
     }
 }
 
-Surface *platform_get_surface(void) {
-    return &g_surface;
-}
-
-void platform_draw_surface(void) {
+void platform_draw_surface(Surface *s) {
     // Upload CPU pixels to the GL texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, g_texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                    g_surface.width, g_surface.height,
-                    GL_RGBA, GL_UNSIGNED_BYTE, g_surface.pixels);
+                    s->width, s->height,
+                    GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
 
     // Fullscreen triangle samples the texture and writes to the framebuffer
     glDrawArrays(GL_TRIANGLES, 0, 3);

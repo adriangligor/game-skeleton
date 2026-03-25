@@ -11,6 +11,7 @@ ifdef OS
     LDFLAGS         = user32.lib gdi32.lib /link /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
     MAIN_OBJ        = $(BUILD_DIR)/main.obj
     GAME_OBJ        = $(BUILD_DIR)/game.obj
+    SURFACE_OBJ     = $(BUILD_DIR)/surface.obj
     CC_COMPILE      = /c
     CC_OBJ_OUT      = /Fo
     CC_EXE_OUT      = /Fe
@@ -20,14 +21,15 @@ else
     UNAME := $(shell uname)
     CC     = cc
     CFLAGS = -Wall -Wextra -std=c23
-    BUILD_DIR = build
-    SRC_DIR   = src
-    TARGET    = $(BUILD_DIR)/game
-    MAIN_OBJ  = $(BUILD_DIR)/main.o
-    GAME_OBJ  = $(BUILD_DIR)/game.o
-    CC_COMPILE = -c
-    CC_OBJ_OUT = -o
-    CC_EXE_OUT = -o
+    BUILD_DIR   = build
+    SRC_DIR     = src
+    TARGET      = $(BUILD_DIR)/game
+    MAIN_OBJ    = $(BUILD_DIR)/main.o
+    GAME_OBJ    = $(BUILD_DIR)/game.o
+    SURFACE_OBJ = $(BUILD_DIR)/surface.o
+    CC_COMPILE  = -c
+    CC_OBJ_OUT  = -o
+    CC_EXE_OUT  = -o
     MKDIR = mkdir -p $(BUILD_DIR)
     CLEAN = rm -rf $(BUILD_DIR)
 
@@ -44,7 +46,7 @@ else
     endif
 endif
 
-OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(PLATFORM_OBJ)
+OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(SURFACE_OBJ) $(PLATFORM_OBJ)
 
 .PHONY: all clean
 
@@ -57,6 +59,9 @@ $(MAIN_OBJ): $(SRC_DIR)/main.c
 	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
 
 $(GAME_OBJ): $(SRC_DIR)/game.c
+	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
+
+$(SURFACE_OBJ): $(SRC_DIR)/surface.c
 	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
 
 $(PLATFORM_OBJ): $(PLATFORM_SRC)

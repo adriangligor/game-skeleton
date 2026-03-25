@@ -1,12 +1,9 @@
-#include "platform.h"
 #include "game.h"
 
 void game_update(void) {
 }
 
-void game_render(void) {
-    Surface *s = platform_get_surface();
-
+void game_render(Surface *s) {
     // Checkerboard test pattern
     for (int y = 0; y < s->height; y++) {
         for (int x = 0; x < s->width; x++) {
@@ -19,5 +16,4 @@ void game_render(void) {
         }
     }
 
-    platform_draw_surface();
 }

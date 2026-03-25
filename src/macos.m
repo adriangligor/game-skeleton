@@ -11,7 +11,6 @@ static id<MTLCommandQueue>        g_queue;
 static id<MTLTexture>             g_texture;
 static id<MTLRenderPipelineState> g_pipeline;
 static bool                       g_running = true;
-static Surface                    g_surface;
 
 // Shaders compiled at runtime — no .metal files or xcrun needed.
 static NSString *kShaderSrc = @
@@ -97,11 +96,6 @@ void platform_open_window(int width, int height, const char *title) {
     g_pipeline = [g_device newRenderPipelineStateWithDescriptor:rpd error:&err];
     NSCAssert(g_pipeline != nil, @"Metal pipeline error: %@", err);
 
-    // CPU pixel buffer owned by the platform
-    g_surface.pixels = malloc((size_t)(width * height * 4));
-    g_surface.width  = width;
-    g_surface.height = height;
-
     [g_window center];
     [g_window makeKeyAndOrderFront:nil];
     [NSApp activateIgnoringOtherApps:YES];
@@ -122,16 +116,12 @@ void platform_pump_events(void) {
     [NSApp updateWindows];
 }
 
-Surface *platform_get_surface(void) {
-    return &g_surface;
-}
-
-void platform_draw_surface(void) {
+void platform_draw_surface(Surface *s) {
     // 1. Upload CPU pixels to the staging texture
-    [g_texture replaceRegion:MTLRegionMake2D(0, 0, g_surface.width, g_surface.height)
+    [g_texture replaceRegion:MTLRegionMake2D(0, 0, s->width, s->height)
                  mipmapLevel:0
-                   withBytes:g_surface.pixels
-                 bytesPerRow:g_surface.width * 4];
+                   withBytes:s->pixels
+                 bytesPerRow:s->width * 4];
 
     // 2. Get the next drawable (blocks briefly if the GPU is behind)
     id<CAMetalDrawable> drawable = [g_layer nextDrawable];
