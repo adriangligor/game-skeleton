@@ -6,6 +6,7 @@ Surface *surface_create(int width, int height) {
     s->pixels = malloc((size_t)(width * height * 4));
     s->width = width;
     s->height = height;
+
     return s;
 }
 

@@ -1,6 +1,23 @@
 #include "game.h"
+#include "input.h"
+#include "platform.h"
 
 void game_update(void) {
+    Event e;
+
+    while (input_next_event(&e)) {
+        switch (e.type) {
+            case EVENT_SYSTEM_QUIT:
+                platform_quit();
+                break;
+            case EVENT_KEY_DOWN:
+                break;
+            case EVENT_KEY_UP:
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void game_render(Surface *s) {

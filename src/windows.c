@@ -6,6 +6,7 @@
 #include <d3dcompiler.h>
 #include <string.h>
 #include "platform.h"
+#include "input.h"
 
 static HWND g_hwnd;
 static bool g_running;
@@ -32,18 +33,69 @@ static const char *k_shader_src =
     "    return tex.Load(int3((int2)pos.xy, 0));\n"
     "}\n";
 
+static KeyCode to_keycode(WPARAM wParam) {
+    int vk = (int)wParam;
+
+    if (vk >= 'A' && vk <= 'Z') {
+        return (KeyCode)(KEY_A + (vk - 'A'));
+    }
+    else if (vk >= '0' && vk <= '9') {
+        return (KeyCode)(KEY_0 + (vk - '0'));
+    }
+
+    switch (vk) {
+        case VK_SPACE:
+            return KEY_SPACE;
+        case VK_RETURN:
+            return KEY_ENTER;
+        case VK_ESCAPE:
+            return KEY_ESCAPE;
+        case VK_TAB:
+            return KEY_TAB;
+        case VK_UP:
+            return KEY_UP;
+        case VK_DOWN:
+            return KEY_DOWN;
+        case VK_LEFT:
+            return KEY_LEFT;
+        case VK_RIGHT:
+            return KEY_RIGHT;
+        default:
+            return KEY_UNKNOWN;
+    }
+}
+
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
+        case WM_CLOSE:
+            input_push_event((Event){ .type = EVENT_SYSTEM_QUIT });
+
+            return 0; // don't destroy — game calls platform_quit() when ready
         case WM_DESTROY:
-            g_running = false;
             PostQuitMessage(0);
+
+            return 0;
+        case WM_KEYDOWN:
+            if (!(lParam & (1 << 30))) { // skip auto-repeat
+                input_push_event((Event){ .type = EVENT_KEY_DOWN, .key = to_keycode(wParam) });
+            }
+
+            return 0;
+        case WM_KEYUP:
+            input_push_event((Event){ .type = EVENT_KEY_UP, .key = to_keycode(wParam) });
+
             return 0;
         case WM_PAINT:
             ValidateRect(hwnd, NULL);
+
             return 0;
         default:
             return DefWindowProcA(hwnd, msg, wParam, lParam);
     }
+}
+
+void platform_quit(void) {
+    g_running = false;
 }
 
 void platform_open_window(int width, int height, const char *title) {
@@ -73,7 +125,7 @@ void platform_open_window(int width, int height, const char *title) {
         rect.right - rect.left,
         rect.bottom - rect.top,
         NULL, NULL, hInstance, NULL
-        );
+    );
 
     // Create D3D11 device and swap chain together
     DXGI_SWAP_CHAIN_DESC scd = {
@@ -92,7 +144,7 @@ void platform_open_window(int width, int height, const char *title) {
         NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
         &feature_level, 1, D3D11_SDK_VERSION,
         &scd, &g_swap_chain, &g_device, NULL, &g_ctx
-        );
+    );
 
     // Render target view from the swap chain back buffer
     ID3D11Texture2D *back_buffer;

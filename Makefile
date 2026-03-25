@@ -12,6 +12,7 @@ ifdef OS
     MAIN_OBJ        = $(BUILD_DIR)/main.obj
     GAME_OBJ        = $(BUILD_DIR)/game.obj
     SURFACE_OBJ     = $(BUILD_DIR)/surface.obj
+    INPUT_OBJ       = $(BUILD_DIR)/input.obj
     CC_COMPILE      = /c
     CC_OBJ_OUT      = /Fo
     CC_EXE_OUT      = /Fe
@@ -27,6 +28,7 @@ else
     MAIN_OBJ    = $(BUILD_DIR)/main.o
     GAME_OBJ    = $(BUILD_DIR)/game.o
     SURFACE_OBJ = $(BUILD_DIR)/surface.o
+    INPUT_OBJ   = $(BUILD_DIR)/input.o
     CC_COMPILE  = -c
     CC_OBJ_OUT  = -o
     CC_EXE_OUT  = -o
@@ -46,7 +48,7 @@ else
     endif
 endif
 
-OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(SURFACE_OBJ) $(PLATFORM_OBJ)
+OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(SURFACE_OBJ) $(INPUT_OBJ) $(PLATFORM_OBJ)
 
 FMT_SRCS = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*.h $(SRC_DIR)/*.m)
 
@@ -64,6 +66,9 @@ $(GAME_OBJ): $(SRC_DIR)/game.c
 	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
 
 $(SURFACE_OBJ): $(SRC_DIR)/surface.c
+	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
+
+$(INPUT_OBJ): $(SRC_DIR)/input.c
 	$(CC) $(CFLAGS) $(CC_COMPILE) $(CC_OBJ_OUT)$@ $<
 
 $(PLATFORM_OBJ): $(PLATFORM_SRC)
