@@ -2,7 +2,7 @@
 #include "surface.h"
 #include "game.h"
 
-static Surface* init_graphics(int width, int height, const char *title) {
+static Surface *init_graphics(int width, int height, const char *title) {
     platform_open_window(width, height, title);
     Surface *s = surface_create(width, height);
 

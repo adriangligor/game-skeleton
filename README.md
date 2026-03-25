@@ -74,5 +74,10 @@ winget install GnuWin32.Make
 |---|---|
 | `make` | Build to `build/game` (or `build\game.exe` on Windows) |
 | `make clean` | Remove `build/` |
+| `make fmt` | Auto-format all source files in-place |
 
 Run: `./build/game` (macOS/Linux) or `build\game.exe` (Windows)
+
+## Dev tooling
+
+`make fmt` formats all `.c`, `.h`, and `.m` source files in-place using [uncrustify](https://github.com/uncrustify/uncrustify). Style is defined in `.uncrustify.cfg` at the project root. Install uncrustify via your system package manager (`brew install uncrustify`, `apt install uncrustify`, `winget install uncrustify`) and ensure it is on your `PATH`.

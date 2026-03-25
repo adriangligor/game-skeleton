@@ -48,7 +48,9 @@ endif
 
 OBJS = $(MAIN_OBJ) $(GAME_OBJ) $(SURFACE_OBJ) $(PLATFORM_OBJ)
 
-.PHONY: all clean
+FMT_SRCS = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/*.h $(SRC_DIR)/*.m)
+
+.PHONY: all clean fmt
 
 all: $(BUILD_DIR) $(TARGET)
 
@@ -72,3 +74,6 @@ $(TARGET): $(OBJS)
 
 clean:
 	$(CLEAN)
+
+fmt:
+	uncrustify -c .uncrustify.cfg --no-backup $(FMT_SRCS)

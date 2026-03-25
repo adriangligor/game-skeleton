@@ -7,16 +7,16 @@
 #include <string.h>
 #include "platform.h"
 
-static HWND                      g_hwnd;
-static bool                      g_running;
-static ID3D11Device             *g_device;
-static ID3D11DeviceContext      *g_ctx;
-static IDXGISwapChain           *g_swap_chain;
-static ID3D11RenderTargetView   *g_rtv;
-static ID3D11Texture2D          *g_texture;
+static HWND g_hwnd;
+static bool g_running;
+static ID3D11Device *g_device;
+static ID3D11DeviceContext *g_ctx;
+static IDXGISwapChain *g_swap_chain;
+static ID3D11RenderTargetView *g_rtv;
+static ID3D11Texture2D *g_texture;
 static ID3D11ShaderResourceView *g_srv;
-static ID3D11VertexShader       *g_vs;
-static ID3D11PixelShader        *g_ps;
+static ID3D11VertexShader *g_vs;
+static ID3D11PixelShader *g_ps;
 
 // Shaders compiled at runtime — no .hlsl files or fxc needed.
 // Vertex shader: fullscreen triangle from SV_VertexID, no vertex buffer.
@@ -72,7 +72,7 @@ void platform_open_window(int width, int height, const char *title) {
         rect.right - rect.left,
         rect.bottom - rect.top,
         NULL, NULL, hInstance, NULL
-    );
+        );
 
     // Create D3D11 device and swap chain together
     DXGI_SWAP_CHAIN_DESC scd = {
@@ -91,7 +91,7 @@ void platform_open_window(int width, int height, const char *title) {
         NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
         &feature_level, 1, D3D11_SDK_VERSION,
         &scd, &g_swap_chain, &g_device, NULL, &g_ctx
-    );
+        );
 
     // Render target view from the swap chain back buffer
     ID3D11Texture2D *back_buffer;
@@ -121,11 +121,11 @@ void platform_open_window(int width, int height, const char *title) {
     D3DCompile(k_shader_src, src_len, NULL, NULL, NULL,
                "ps_main", "ps_5_0", 0, 0, &ps_blob, NULL);
     ID3D11Device_CreateVertexShader(g_device,
-        ID3D10Blob_GetBufferPointer(vs_blob), ID3D10Blob_GetBufferSize(vs_blob),
-        NULL, &g_vs);
+                                    ID3D10Blob_GetBufferPointer(vs_blob), ID3D10Blob_GetBufferSize(vs_blob),
+                                    NULL, &g_vs);
     ID3D11Device_CreatePixelShader(g_device,
-        ID3D10Blob_GetBufferPointer(ps_blob), ID3D10Blob_GetBufferSize(ps_blob),
-        NULL, &g_ps);
+                                   ID3D10Blob_GetBufferPointer(ps_blob), ID3D10Blob_GetBufferSize(ps_blob),
+                                   NULL, &g_ps);
     ID3D10Blob_Release(vs_blob);
     ID3D10Blob_Release(ps_blob);
 

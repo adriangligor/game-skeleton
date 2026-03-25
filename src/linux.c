@@ -17,14 +17,14 @@
 typedef GLXContext (*glXCreateContextAttribsARBProc)(
     Display *, GLXFBConfig, GLXContext, Bool, const int *);
 
-static Display   *g_display;
-static Window     g_window;
-static Atom       g_wm_delete_window;
+static Display *g_display;
+static Window g_window;
+static Atom g_wm_delete_window;
 static GLXContext g_ctx;
-static GLuint     g_texture;
-static GLuint     g_program;
-static GLuint     g_vao;
-static bool       g_running;
+static GLuint g_texture;
+static GLuint g_program;
+static GLuint g_vao;
+static bool g_running;
 
 // Fullscreen triangle. OpenGL UV origin is bottom-left but our CPU buffer
 // has row 0 at the top, so V is flipped: uv.y = (1 - ndc.y) / 2.
