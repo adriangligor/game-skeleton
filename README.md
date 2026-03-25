@@ -46,7 +46,7 @@ The surface pixel format is **RGBA8** (one byte per channel, R at the lowest add
 ### Platform details
 
 - **macOS** — `CAMetalLayer` with `MTLPixelFormatRGBA8Unorm`. Upload via `MTLTexture replaceRegion` (storage mode: `MTLStorageModeShared` on Apple Silicon, `MTLStorageModeManaged` on Intel). Display via a one-triangle render pass; a Metal fragment shader reads the staging texture by integer pixel coordinate (`tex.read(uint2(pos.xy))`). Shaders are compiled from a source string at startup — no `.metal` files or offline compilation step needed.
-- **Linux** (planned) — X11 window + OpenGL context via GLX. Upload via `glTexSubImage2D(GL_RGBA, ...)`. Display via a fullscreen quad GLSL shader. Links only `-lGL`, which is standard on any X11 desktop.
+- **Linux** — X11 window with a GLX-compatible visual; OpenGL 3.3 core context via `glXCreateContextAttribsARB`. Upload via `glTexSubImage2D(GL_RGBA, ...)`. Display via a fullscreen triangle GLSL 3.30 shader (`gl_VertexID` trick, V-axis flipped to match the top-left CPU buffer origin). Links `-lX11 -lGL`; no extra libraries.
 - **Windows** (planned) — Win32 window + Direct3D 11. Upload via `ID3D11DeviceContext::UpdateSubresource` to a `DXGI_FORMAT_R8G8B8A8_UNORM` texture. Display via a fullscreen pass HLSL shader.
 
 ## Build
@@ -57,11 +57,11 @@ macOS requires Xcode Command Line Tools:
 xcode-select --install
 ```
 
-Linux requires the X11 development headers:
+Linux requires X11 and OpenGL development headers:
 
 ```sh
-sudo apt install build-essential libx11-dev   # Debian/Ubuntu
-sudo dnf install gcc make libX11-devel        # Fedora/RHEL
+sudo apt install build-essential libx11-dev libgl-dev   # Debian/Ubuntu
+sudo dnf install gcc make libX11-devel mesa-libGL-devel  # Fedora/RHEL
 ```
 
 Windows requires Visual Studio (2019 16.8+ for C17 designated initializers) and GNU make (available via winget, Chocolatey, or Git for Windows). Build from a **Developer Command Prompt for VS** so `cl.exe` is on PATH:

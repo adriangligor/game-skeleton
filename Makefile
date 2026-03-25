@@ -40,7 +40,7 @@ else
         PLATFORM_SRC    = $(SRC_DIR)/linux.c
         PLATFORM_OBJ    = $(BUILD_DIR)/linux.o
         PLATFORM_CFLAGS = $(CFLAGS)
-        LDFLAGS         = -lX11
+        LDFLAGS         = -lX11 -lGL
     endif
 endif
 
