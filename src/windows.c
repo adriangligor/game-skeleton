@@ -33,14 +33,14 @@ static const char *k_shader_src =
     "    return tex.Load(int3((int2)pos.xy, 0));\n"
     "}\n";
 
-static KeyCode to_keycode(WPARAM wParam) {
+static KeyId to_key_id(WPARAM wParam) {
     int vk = (int)wParam;
 
     if (vk >= 'A' && vk <= 'Z') {
-        return (KeyCode)(KEY_A + (vk - 'A'));
+        return (KeyId)(KEY_A + (vk - 'A'));
     }
     else if (vk >= '0' && vk <= '9') {
-        return (KeyCode)(KEY_0 + (vk - '0'));
+        return (KeyId)(KEY_0 + (vk - '0'));
     }
 
     switch (vk) {
@@ -77,12 +77,12 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
             return 0;
         case WM_KEYDOWN:
             if (!(lParam & (1 << 30))) { // skip auto-repeat
-                input_push_event((Event){ .type = EVENT_KEY_DOWN, .key = to_keycode(wParam) });
+                input_push_event((Event){ .type = EVENT_KEY_DOWN, .key = to_key_id(wParam) });
             }
 
             return 0;
         case WM_KEYUP:
-            input_push_event((Event){ .type = EVENT_KEY_UP, .key = to_keycode(wParam) });
+            input_push_event((Event){ .type = EVENT_KEY_UP, .key = to_key_id(wParam) });
 
             return 0;
         case WM_PAINT:

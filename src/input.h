@@ -11,7 +11,7 @@ typedef enum {
     KEY_0, KEY_1, KEY_2, KEY_3, KEY_4,
     KEY_5, KEY_6, KEY_7, KEY_8, KEY_9,
     KEY_COUNT
-} KeyCode;
+} KeyId;
 
 typedef enum {
     EVENT_NONE = 0,
@@ -22,7 +22,7 @@ typedef enum {
 
 typedef struct {
     EventType type;
-    KeyCode key;   // valid for EVENT_KEY_DOWN / EVENT_KEY_UP
+    KeyId key; // valid for EVENT_KEY_DOWN / EVENT_KEY_UP
 } Event;
 
 // Called by platform code during platform_pump_events()

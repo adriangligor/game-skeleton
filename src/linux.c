@@ -10,16 +10,16 @@
 // GLX_ARB_create_context constants (defined in glxext.h, guard against
 // systems where glx.h already pulls them in)
 #ifndef GLX_CONTEXT_MAJOR_VERSION_ARB
-#define GLX_CONTEXT_MAJOR_VERSION_ARB    0x2091
-#define GLX_CONTEXT_MINOR_VERSION_ARB    0x2092
-#define GLX_CONTEXT_PROFILE_MASK_ARB     0x9126
+#define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
+#define GLX_CONTEXT_PROFILE_MASK_ARB 0x9126
 #define GLX_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
 #endif
 
 typedef GLXContext (*glXCreateContextAttribsARBProc)(
     Display *, GLXFBConfig, GLXContext, Bool, const int *);
 
-static KeyCode to_keycode(KeySym sym) {
+static KeyId to_key_id(KeySym sym) {
     switch (sym) {
         case XK_a:
         case XK_A:
@@ -282,11 +282,11 @@ void platform_pump_events(void) {
         }
         else if (e.type == KeyPress) {
             KeySym sym = XLookupKeysym(&e.xkey, 0);
-            input_push_event((Event){ .type = EVENT_KEY_DOWN, .key = to_keycode(sym) });
+            input_push_event((Event){ .type = EVENT_KEY_DOWN, .key = to_key_id(sym) });
         }
         else if (e.type == KeyRelease) {
             KeySym sym = XLookupKeysym(&e.xkey, 0);
-            input_push_event((Event){ .type = EVENT_KEY_UP, .key = to_keycode(sym) });
+            input_push_event((Event){ .type = EVENT_KEY_UP, .key = to_key_id(sym) });
         }
     }
 }

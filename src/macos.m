@@ -31,7 +31,7 @@ static NSString *kShaderSrc = @
 @end
 
 // macOS virtual key codes (hardware layout, independent of keyboard locale)
-static KeyCode to_keycode(unsigned short kc) {
+static KeyId to_key_id(unsigned short kc) {
     switch (kc) {
         case 0x00:
             return KEY_A;
@@ -226,7 +226,7 @@ void platform_pump_events(void) {
             }
             else {
                 EventType et = (type == NSEventTypeKeyDown) ? EVENT_KEY_DOWN : EVENT_KEY_UP;
-                input_push_event((Event){ .type = et, .key = to_keycode(event.keyCode) });
+                input_push_event((Event){ .type = et, .key = to_key_id(event.keyCode) });
             }
         }
         else {
