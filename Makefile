@@ -8,7 +8,7 @@ ifdef OS
     PLATFORM_SRC    = $(SRC_DIR)/windows.c
     PLATFORM_OBJ    = $(BUILD_DIR)/windows.obj
     PLATFORM_CFLAGS = $(CFLAGS)
-    LDFLAGS         = user32.lib gdi32.lib /link /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
+    LDFLAGS         = user32.lib d3d11.lib dxgi.lib d3dcompiler.lib /link /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup
     MAIN_OBJ        = $(BUILD_DIR)/main.obj
     GAME_OBJ        = $(BUILD_DIR)/game.obj
     SURFACE_OBJ     = $(BUILD_DIR)/surface.obj
