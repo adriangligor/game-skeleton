@@ -52,10 +52,10 @@ void platform_open_window(int width, int height, const char *title) {
     HINSTANCE hInstance = GetModuleHandleA(NULL);
 
     WNDCLASSEXA wc = {
-        .cbSize        = sizeof(WNDCLASSEXA),
-        .lpfnWndProc   = window_proc,
-        .hInstance     = hInstance,
-        .hCursor       = LoadCursor(NULL, IDC_ARROW),
+        .cbSize = sizeof(WNDCLASSEXA),
+        .lpfnWndProc = window_proc,
+        .hInstance = hInstance,
+        .hCursor = LoadCursor(NULL, IDC_ARROW),
         .lpszClassName = "GameWindow",
     };
     RegisterClassExA(&wc);
@@ -77,15 +77,15 @@ void platform_open_window(int width, int height, const char *title) {
 
     // Create D3D11 device and swap chain together
     DXGI_SWAP_CHAIN_DESC scd = {
-        .BufferCount              = 1,
-        .BufferDesc.Width         = (UINT)width,
-        .BufferDesc.Height        = (UINT)height,
-        .BufferDesc.Format        = DXGI_FORMAT_R8G8B8A8_UNORM,
-        .BufferUsage              = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-        .OutputWindow             = g_hwnd,
-        .SampleDesc.Count         = 1,
-        .Windowed                 = TRUE,
-        .SwapEffect               = DXGI_SWAP_EFFECT_DISCARD,
+        .BufferCount = 1,
+        .BufferDesc.Width = (UINT)width,
+        .BufferDesc.Height = (UINT)height,
+        .BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+        .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+        .OutputWindow = g_hwnd,
+        .SampleDesc.Count = 1,
+        .Windowed = TRUE,
+        .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
     };
     D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_0;
     D3D11CreateDeviceAndSwapChain(
@@ -102,14 +102,14 @@ void platform_open_window(int width, int height, const char *title) {
 
     // Staging texture for CPU→GPU upload: matches the CPU surface format exactly
     D3D11_TEXTURE2D_DESC td = {
-        .Width            = (UINT)width,
-        .Height           = (UINT)height,
-        .MipLevels        = 1,
-        .ArraySize        = 1,
-        .Format           = DXGI_FORMAT_R8G8B8A8_UNORM,
+        .Width = (UINT)width,
+        .Height = (UINT)height,
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
         .SampleDesc.Count = 1,
-        .Usage            = D3D11_USAGE_DEFAULT,
-        .BindFlags        = D3D11_BIND_SHADER_RESOURCE,
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_SHADER_RESOURCE,
     };
     ID3D11Device_CreateTexture2D(g_device, &td, NULL, &g_texture);
     ID3D11Device_CreateShaderResourceView(g_device, (ID3D11Resource *)g_texture, NULL, &g_srv);
@@ -118,15 +118,15 @@ void platform_open_window(int width, int height, const char *title) {
     ID3DBlob *vs_blob, *ps_blob;
     SIZE_T src_len = strlen(k_shader_src);
     D3DCompile(k_shader_src, src_len, NULL, NULL, NULL,
-               "vs_main", "vs_5_0", 0, 0, &vs_blob, NULL);
+        "vs_main", "vs_5_0", 0, 0, &vs_blob, NULL);
     D3DCompile(k_shader_src, src_len, NULL, NULL, NULL,
-               "ps_main", "ps_5_0", 0, 0, &ps_blob, NULL);
+        "ps_main", "ps_5_0", 0, 0, &ps_blob, NULL);
     ID3D11Device_CreateVertexShader(g_device,
-                                    ID3D10Blob_GetBufferPointer(vs_blob), ID3D10Blob_GetBufferSize(vs_blob),
-                                    NULL, &g_vs);
+        ID3D10Blob_GetBufferPointer(vs_blob), ID3D10Blob_GetBufferSize(vs_blob),
+        NULL, &g_vs);
     ID3D11Device_CreatePixelShader(g_device,
-                                   ID3D10Blob_GetBufferPointer(ps_blob), ID3D10Blob_GetBufferSize(ps_blob),
-                                   NULL, &g_ps);
+        ID3D10Blob_GetBufferPointer(ps_blob), ID3D10Blob_GetBufferSize(ps_blob),
+        NULL, &g_ps);
     ID3D10Blob_Release(vs_blob);
     ID3D10Blob_Release(ps_blob);
 
@@ -158,7 +158,7 @@ void platform_pump_events(void) {
 void platform_draw_surface(Surface *s) {
     // Upload CPU pixels to the staging texture
     ID3D11DeviceContext_UpdateSubresource(g_ctx, (ID3D11Resource *)g_texture,
-                                          0, NULL, s->pixels, (UINT)(s->width * 4), 0);
+        0, NULL, s->pixels, (UINT)(s->width * 4), 0);
 
     // Fullscreen triangle samples the texture and writes to the back buffer
     ID3D11DeviceContext_Draw(g_ctx, 3, 0);

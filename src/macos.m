@@ -14,17 +14,17 @@ static bool g_running = true;
 
 // Shaders compiled at runtime — no .metal files or xcrun needed.
 static NSString *kShaderSrc = @
-                              "#include <metal_stdlib>\n"
-                              "using namespace metal;\n"
-                              "struct V2F { float4 pos [[position]]; };\n"
-                              "vertex V2F vert_main(uint vid [[vertex_id]]) {\n"
-                              "    const float2 v[3] = {float2(-1,1), float2(3,1), float2(-1,-3)};\n"
-                              "    V2F out; out.pos = float4(v[vid], 0, 1); return out;\n"
-                              "}\n"
-                              "fragment float4 frag_main(V2F in [[stage_in]],\n"
-                              "                          texture2d<float> tex [[texture(0)]]) {\n"
-                              "    return tex.read(uint2(in.pos.xy));\n"
-                              "}\n";
+    "#include <metal_stdlib>\n"
+    "using namespace metal;\n"
+    "struct V2F { float4 pos [[position]]; };\n"
+    "vertex V2F vert_main(uint vid [[vertex_id]]) {\n"
+    "    const float2 v[3] = {float2(-1,1), float2(3,1), float2(-1,-3)};\n"
+    "    V2F out; out.pos = float4(v[vid], 0, 1); return out;\n"
+    "}\n"
+    "fragment float4 frag_main(V2F in [[stage_in]],\n"
+    "                          texture2d<float> tex [[texture(0)]]) {\n"
+    "    return tex.read(uint2(in.pos.xy));\n"
+    "}\n";
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 @end
@@ -45,13 +45,13 @@ void platform_open_window(int width, int height, const char *title) {
     CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
     NSRect frame = NSMakeRect(0, 0, width / scale, height / scale);
     NSUInteger style = NSWindowStyleMaskTitled
-                       | NSWindowStyleMaskClosable
-                       | NSWindowStyleMaskMiniaturizable;
+        | NSWindowStyleMaskClosable
+        | NSWindowStyleMaskMiniaturizable;
 
     g_window = [[NSWindow alloc] initWithContentRect:frame
-                styleMask:style
-                backing:NSBackingStoreBuffered
-                defer:NO];
+        styleMask:style
+        backing:NSBackingStoreBuffered
+        defer:NO];
     [g_window setTitle:[NSString stringWithUTF8String:title]];
     [g_window setDelegate:delegate];
 
@@ -64,24 +64,24 @@ void platform_open_window(int width, int height, const char *title) {
 
     // Metal device and queue
     g_device = MTLCreateSystemDefaultDevice();
-    g_queue  = [g_device newCommandQueue];
+    g_queue = [g_device newCommandQueue];
 
     // Layer configuration — fix drawable size to the logical pixel dimensions
-    g_layer.device       = g_device;
-    g_layer.pixelFormat  = MTLPixelFormatRGBA8Unorm;
+    g_layer.device = g_device;
+    g_layer.pixelFormat = MTLPixelFormatRGBA8Unorm;
     g_layer.drawableSize = CGSizeMake(width, height);
 
     // Staging texture: CPU-writable, GPU-readable, same format as the layer.
     // Use Shared on Apple Silicon (unified memory), Managed on Intel (discrete GPU).
+    // *INDENT-OFF*
     MTLTextureDescriptor *desc =
         [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
-         width:width
-         height:height
-         mipmapped:NO];
+            width:width
+            height:height
+            mipmapped:NO];
+    // *INDENT-ON*
     desc.usage = MTLTextureUsageShaderRead;
-    desc.storageMode = g_device.hasUnifiedMemory
-                     ? MTLStorageModeShared
-                     : MTLStorageModeManaged;
+    desc.storageMode = g_device.hasUnifiedMemory ? MTLStorageModeShared : MTLStorageModeManaged;
     g_texture = [g_device newTextureWithDescriptor:desc];
 
     // Compile shaders from source at startup
@@ -90,9 +90,9 @@ void platform_open_window(int width, int height, const char *title) {
     NSCAssert(lib != nil, @"Metal shader compile error: %@", err);
 
     MTLRenderPipelineDescriptor *rpd = [[MTLRenderPipelineDescriptor alloc] init];
-    rpd.vertexFunction                    = [lib newFunctionWithName:@"vert_main"];
-    rpd.fragmentFunction                  = [lib newFunctionWithName:@"frag_main"];
-    rpd.colorAttachments[0].pixelFormat   = MTLPixelFormatRGBA8Unorm;
+    rpd.vertexFunction = [lib newFunctionWithName:@"vert_main"];
+    rpd.fragmentFunction = [lib newFunctionWithName:@"frag_main"];
+    rpd.colorAttachments[0].pixelFormat = MTLPixelFormatRGBA8Unorm;
     g_pipeline = [g_device newRenderPipelineStateWithDescriptor:rpd error:&err];
     NSCAssert(g_pipeline != nil, @"Metal pipeline error: %@", err);
 
@@ -108,9 +108,9 @@ bool platform_running(void) {
 void platform_pump_events(void) {
     NSEvent *event;
     while ((event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                     untilDate:[NSDate distantPast]
-                     inMode:NSDefaultRunLoopMode
-                     dequeue:YES])) {
+        untilDate:[NSDate distantPast]
+        inMode:NSDefaultRunLoopMode
+        dequeue:YES])) {
         [NSApp sendEvent:event];
     }
     [NSApp updateWindows];
@@ -118,10 +118,12 @@ void platform_pump_events(void) {
 
 void platform_draw_surface(Surface *s) {
     // 1. Upload CPU pixels to the staging texture
+    // *INDENT-OFF*
     [g_texture replaceRegion:MTLRegionMake2D(0, 0, s->width, s->height)
-     mipmapLevel:0
-     withBytes:s->pixels
-     bytesPerRow:s->width * 4];
+        mipmapLevel:0
+        withBytes:s->pixels
+        bytesPerRow:s->width * 4];
+    // *INDENT-ON*
 
     // 2. Get the next drawable (blocks briefly if the GPU is behind)
     id<CAMetalDrawable> drawable = [g_layer nextDrawable];
@@ -129,8 +131,8 @@ void platform_draw_surface(Surface *s) {
 
     // 3. One-triangle render pass: sample staging texture → drawable
     MTLRenderPassDescriptor *rpd = [MTLRenderPassDescriptor renderPassDescriptor];
-    rpd.colorAttachments[0].texture     = drawable.texture;
-    rpd.colorAttachments[0].loadAction  = MTLLoadActionDontCare;
+    rpd.colorAttachments[0].texture = drawable.texture;
+    rpd.colorAttachments[0].loadAction = MTLLoadActionDontCare;
     rpd.colorAttachments[0].storeAction = MTLStoreActionStore;
 
     id<MTLCommandBuffer>        cmd = [g_queue commandBuffer];

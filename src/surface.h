@@ -8,4 +8,4 @@ typedef struct {
 } Surface;
 
 Surface *surface_create(int width, int height);
-void     surface_destroy(Surface *s);
+void surface_destroy(Surface *s);

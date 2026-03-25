@@ -74,22 +74,22 @@ void platform_open_window(int width, int height, const char *title) {
     // Window must use the visual that matches the FB config
     XVisualInfo *vi = glXGetVisualFromFBConfig(g_display, fbc);
     Colormap cmap = XCreateColormap(g_display, RootWindow(g_display, screen),
-                                    vi->visual, AllocNone);
+        vi->visual, AllocNone);
     XSetWindowAttributes swa = {
-        .colormap   = cmap,
+        .colormap = cmap,
         .event_mask = StructureNotifyMask,
     };
     g_window = XCreateWindow(g_display, RootWindow(g_display, screen),
-                             0, 0, width, height, 0,
-                             vi->depth, InputOutput, vi->visual,
-                             CWColormap | CWEventMask, &swa);
+        0, 0, width, height, 0,
+        vi->depth, InputOutput, vi->visual,
+        CWColormap | CWEventMask, &swa);
     XFree(vi);
 
     XStoreName(g_display, g_window, title);
 
     XSizeHints *hints = XAllocSizeHints();
-    hints->flags      = PMinSize | PMaxSize;
-    hints->min_width  = hints->max_width  = width;
+    hints->flags = PMinSize | PMaxSize;
+    hints->min_width = hints->max_width = width;
     hints->min_height = hints->max_height = height;
     XSetWMNormalHints(g_display, g_window, hints);
     XFree(hints);
@@ -134,7 +134,7 @@ void platform_open_window(int width, int height, const char *title) {
     glGenTextures(1, &g_texture);
     glBindTexture(GL_TEXTURE_2D, g_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -163,8 +163,8 @@ void platform_draw_surface(Surface *s) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, g_texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                    s->width, s->height,
-                    GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
+        s->width, s->height,
+        GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
 
     // Fullscreen triangle samples the texture and writes to the framebuffer
     glDrawArrays(GL_TRIANGLES, 0, 3);
